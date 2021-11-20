@@ -1,0 +1,12 @@
+image:
+  file: .gitpod.Dockerfile
+
+tasks:
+  - name: Build Project
+    init: go build ./...
+  - name: Run Tests
+    init: go test ./...
+
+ports:
+  - port: 3000
+    onOpen: ignore
