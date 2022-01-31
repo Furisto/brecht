@@ -13,10 +13,6 @@ var (
 	entWidth             = offsetWidth + positionWidth
 )
 
-type Config struct {
-	MaxIndexBytes uint64
-}
-
 type Index struct {
 	file *os.File
 	mmap gommap.MMap
@@ -34,7 +30,7 @@ func newIndex(f *os.File, c Config) (*Index, error) {
 	}
 
 	index.size = uint64(stat.Size())
-	if err = os.Truncate(f.Name(), int64(c.MaxIndexBytes)); err != nil {
+	if err = os.Truncate(f.Name(), int64(c.Segment.MaxIndexBytes)); err != nil {
 		return nil, err
 	}
 
@@ -85,9 +81,9 @@ func (index *Index) Write(offset uint32, position uint64) error {
 		return io.EOF
 	}
 
-	encoding.PutUint32(index.mmap[index.size: index.size + offsetWidth], offset)
-	encoding.PutUint64(index.mmap[index.size + offsetWidth : index.size + entWidth], position)
-	index.size+= entWidth
+	encoding.PutUint32(index.mmap[index.size:index.size+offsetWidth], offset)
+	encoding.PutUint64(index.mmap[index.size+offsetWidth:index.size+entWidth], position)
+	index.size += entWidth
 	return nil
 }
 
